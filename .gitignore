@@ -3,3 +3,7 @@
 */logs/
 */obj/
 */umbraco/Data/TEMP/
+*.vscode/
+*.appsettings-schema.Umbraco.Cms.json
+*/umbraco/Data/Umbraco.sqlite.db
+*/umbraco/Logs/
