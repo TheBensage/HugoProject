@@ -1,0 +1,25 @@
+{
+  "Files": [
+    {
+      "Id": "C:\\Users\\creat\\Desktop\\HugoProject\\HugoProjectWebUI\\wwwroot\\favicon.ico",
+      "PackagePath": "staticwebassets\\favicon.ico"
+    },
+    {
+      "Id": "obj\\Debug\\net7.0\\staticwebassets\\msbuild.HugoProjectWebUI.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj\\Debug\\net7.0\\staticwebassets\\msbuild.build.HugoProjectWebUI.props",
+      "PackagePath": "build\\HugoProjectWebUI.props"
+    },
+    {
+      "Id": "obj\\Debug\\net7.0\\staticwebassets\\msbuild.buildMultiTargeting.HugoProjectWebUI.props",
+      "PackagePath": "buildMultiTargeting\\HugoProjectWebUI.props"
+    },
+    {
+      "Id": "obj\\Debug\\net7.0\\staticwebassets\\msbuild.buildTransitive.HugoProjectWebUI.props",
+      "PackagePath": "buildTransitive\\HugoProjectWebUI.props"
+    }
+  ],
+  "ElementsToRemove": []
+}
