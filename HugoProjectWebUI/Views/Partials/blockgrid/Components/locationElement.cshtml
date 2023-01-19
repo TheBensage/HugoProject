@@ -1,0 +1,73 @@
+﻿@using Umbraco.Extensions
+@using DataModels;
+@using LocationHelpers;
+@using System.Linq;
+@using Microsoft.Extensions.Configuration;
+@inject IConfiguration Configuration;
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Umbraco.Cms.Core.Models.Blocks.BlockGridItem>
+
+@{
+
+    String apiKey = Configuration.GetValue<string>("ApiKey");
+
+    string locationQuery = Model.Content.Value<string>("locationName");
+
+    int? daysToShow = Model.Content.Value<int>("daysToShow");
+
+    OpenWeatherAPIObject owmDataResponse = LocationHelper.GetOpenWeatherAPIObject(locationQuery, apiKey).Result;
+}
+
+@if (owmDataResponse != null)
+
+{
+
+    IEnumerable<List> resultList = owmDataResponse.list.GroupBy(x => x.dt_txt.Date).ToList().Select(x => x.First());
+    if(daysToShow != null && daysToShow > 0){
+        resultList = resultList.Take(daysToShow.Value).ToList();
+    }
+    <div class="row gx-2 gy-2">
+        @foreach (List owmResult in resultList)
+
+        {
+
+            if (owmResult.dt_txt != null)
+
+            {
+
+                Weather weatherResponse = owmResult.weather.FirstOrDefault();
+
+                string weatherCode = weatherResponse.icon.Substring(0, 2);
+
+                string className = LocationHelper.GetWeatherClass(weatherCode);
+
+                string imageUrl = "/Assets/" + weatherCode + "d.svg";
+
+                string suffix = LocationHelper.GetDayNumberSuffix(owmResult.dt_txt);
+                <div class="col-lg-4 col-xl-3 col-md-6">
+                    <div class="card h-100 pb-5 text-white text-center @className">
+                        <div class="card-body py-5">
+                            <p>@(owmResult.dt_txt.Date == DateTime.Now.Date ? "Today" : owmResult.dt_txt.Date.ToString("dddd"))
+                                @owmResult.dt_txt.Date.Day@suffix</p>
+                            <img class="weather-image" src="@imageUrl" />
+                            <p class="weather-heading">@weatherResponse.description.ToUpper()</p>
+                            <p class="weather-celsius"><b>@(Math.Round(owmResult.main.temp))</b><span class="weather-unit">°C</span>
+                            </p>
+                            <p class="weather-farenheight">@Math.Round((owmResult.main.temp * 9) / 5 + 32)°F</p>
+                        </div>
+                    </div>
+                </div>
+
+            }
+
+        }
+    </div>
+
+}
+else
+{
+    <p>Sorry, no results for this search.</p>
+    @locationQuery @daysToShow
+
+}
+
+<p>Last Fetched @DateTime.Now</p>

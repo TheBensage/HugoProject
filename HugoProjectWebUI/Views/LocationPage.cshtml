@@ -1,0 +1,79 @@
+﻿@using Umbraco.Cms.Web.Common.PublishedModels;
+@using System.Net.Http;
+@using Newtonsoft.Json
+@using System.Web;
+@using DataModels;
+@using LocationHelpers;
+@using Microsoft.Extensions.Configuration;
+@inject IConfiguration Configuration;
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<ContentModels.Location>
+@using ContentModels = Umbraco.Cms.Web.Common.PublishedModels;
+@{
+	Layout = "MasterPage.cshtml";
+	DateTime currentDateTime = DateTime.Now;
+	DateTime expiryDateTime = new DateTime(currentDateTime.Year, currentDateTime.Month, currentDateTime.Day + 1, 0, 0, 0);
+	String apiKey = Configuration.GetValue<string>("ApiKey");
+	string locationQuery = Context.Request.Query["location"];
+
+}
+
+<div class="container p-5">
+	<h1 class="mb-3 text-center">Weather Search by Location</h1>
+<form class="row mb-4">
+	<div class="col-12 mb-2">
+		<label class="visually-hidden" for="city">Search for the weather in a location of your choice</label>
+		<input type="text" class="form-control" name="location" value="@locationQuery" required id="city" placeholder="Search...">
+	</div>
+	<div class="col-auto mx-auto">
+		<button type="submit" class="btn btn-secondary">Submit</button>
+	</div>
+</form>
+
+@if (string.IsNullOrEmpty(locationQuery))
+{
+	<cache expires-on="@expiryDateTime">
+		@await Html.GetBlockGridHtmlAsync(Model.PageGrid)
+	</cache>
+
+}
+else
+{
+	<cache vary-by="@locationQuery" expires-on="@expiryDateTime">
+		@{
+			OpenWeatherAPIObject owmDataResponse = LocationHelper.GetOpenWeatherAPIObject(locationQuery, apiKey).Result;
+		}
+
+		@if (owmDataResponse != null)
+		{
+			<div class="row gx-2 gy-2">
+			@foreach (List owmResult in owmDataResponse.list.GroupBy(x => x.dt_txt.Date).ToList().Select(x => x.First()))
+			{
+				if (owmResult.dt_txt != null)
+				{
+					Weather weatherResponse = owmResult.weather.FirstOrDefault();
+					string weatherCode = weatherResponse.icon.Substring(0, 2);
+					string className = LocationHelper.GetWeatherClass(weatherCode);
+					string imageUrl = "/Assets/" + weatherCode + "d.svg";
+					string suffix = LocationHelper.GetDayNumberSuffix(owmResult.dt_txt);
+						<div class="col-lg-4 col-xl-3 col-md-6">
+							<div class="card h-100 pb-5 text-white text-center @className">
+								<div class="card-body py-5">
+									<p>@(owmResult.dt_txt.Date == DateTime.Now.Date ? "Today" : owmResult.dt_txt.Date.ToString("dddd")) @owmResult.dt_txt.Date.Day@suffix</p>
+									<img class="weather-image" src="@imageUrl" />
+									<p class="weather-heading">@weatherResponse.description.ToUpper()</p>
+									<p class="weather-celsius"><b>@(Math.Round(owmResult.main.temp))</b><span class="weather-unit">°C</span></p>						
+									<p class="weather-farenheight">@Math.Round((owmResult.main.temp * 9) / 5 + 32)°F</p>
+								</div>
+							</div>
+						</div>
+				}
+			}
+			</div>
+		}else{
+			<p>Sorry, no results for this search.</p>
+		}
+
+		<p>Last Fetched @DateTime.Now</p>
+	</cache>
+}
+</div>
