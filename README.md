@@ -5,12 +5,16 @@
 
 dotnet watch  run --project "HugoProjectWebUI"  for hot reloading
 
-dotnet run --project "HugoProjectWebUI"  for hot reloading
+dotnet run --project "HugoProjectWebUI"
 
 # Configuration
 
 ModelsBuilderMode set to SourceCodeManual for Development environement to enable hot reloading should be changed to SourceCodeAuto for release
 USync Package is included to Sync Umbraco Content from the Umbraco DB across different hosting environments
+
+# Dependencies
+
+.Net 7 SDK
 
 # Documentation
 
