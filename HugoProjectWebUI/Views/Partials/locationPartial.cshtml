@@ -18,7 +18,7 @@
     {
         OpenWeatherAPIObject owmDataResponse = LocationHelper.GetOpenWeatherAPIObject(Model.LocationQuery,
         Model.ApiKey).Result;
-        IEnumerable<List> resultList = owmDataResponse.list.GroupBy(x => x.dt_txt.Date).ToList().Select(x => x.First());
+        IEnumerable<List> resultList = owmDataResponse.list.GroupBy(x => x.dt_txt.Date).ToList().Select(x => x.Where(y => y.dt_txt.Hour >=12).First());
         if (Model.DaysToShow != null && Model.DaysToShow > 0)
         {
             resultList = resultList.Take(Model.DaysToShow.Value).ToList();
@@ -47,10 +47,8 @@
                             </div>
                         </div>
                     </div>
-
-                    <p>@owmResult.dt_txt</p>
                 }
-            }
+            }            
         </div>
     }
     else
