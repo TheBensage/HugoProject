@@ -12,6 +12,10 @@ namespace DataModels
         public List<List> list { get; set; }
         public City city { get; set; }
 
+        public string locationQuery {get; set;}
+
+        public int daysToShow {get; set;}
+
     }
 
     public class List
