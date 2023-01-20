@@ -1,5 +1,5 @@
 body{
-    font-family: 'Roboto', sans-serif !important;;
+    font-family: 'Roboto', sans-serif !important;
 }
 
 .weather-heading{
@@ -19,7 +19,7 @@ body{
   margin-top:-2em;
 }
 .weather-unit{
-  font-size:0.6em !important;
+  font-size:0.6em;
 }
 
 .card{
